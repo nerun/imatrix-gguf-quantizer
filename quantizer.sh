@@ -410,6 +410,8 @@ stage_card() {
   fi
   for t in "${CARD_TAGS[@]}"; do args+=(--tag "$t"); done
   for q in "${QUANTS[@]}"; do args+=(--llm "$OUT/$NAME.$QUANT_TAG-$q.gguf=$QUANT_TAG-$q"); done
+  # The plain copy used to compute the imatrix is a valid quant too (made without --imatrix)
+  args+=(--llm "$OUT/$NAME-$IMATRIX_SRC_TYPE.gguf=${IMATRIX_SRC_TYPE^^} (no imatrix)")
   args+=(--extra "$OUT/$NAME-bf16.gguf=BF16" --extra "$IMATRIX=imatrix")
   for t in "${MMPROJ_TYPES[@]}"; do args+=(--mmproj "$OUT/mmproj-$NAME-$t.gguf=$t"); done
   for f in "$OUT"/mtp-head/*.gguf "$OUT/$NAME-MTP-donor-$MTP_DONOR_TYPE.gguf"; do

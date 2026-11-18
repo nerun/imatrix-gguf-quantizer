@@ -179,7 +179,7 @@ The mmproj is produced by `convert_hf_to_gguf.py --mmproj`, not by `llama-quanti
 
 The `card` stage looks at which files exist in `gguf/` when it runs, so run it last (it is the last default stage) and rerun it after adding or removing files. Files that do not exist yet are left out of the tables, with a note on stderr.
 
-The generated card has these parts: front matter (`library_name: gguf`, `license`, `base_model`, `base_model_relation: quantized`, `tags`), the file table sorted by size (quants, then the BF16 and the imatrix), the mmproj table, the MTP head table, a `llama-server` usage example, "How it was made", the license and the original model card. Sizes are shown as GiB with the decimal GB in parentheses.
+The generated card has these parts: front matter (`library_name: gguf`, `license`, `base_model`, `base_model_relation: quantized`, `tags`), the file table sorted by size (the imatrix quants and the plain `IMATRIX_SRC_TYPE` copy, labelled "(no imatrix)", then the BF16 and the imatrix), the mmproj table, the MTP head table, a `llama-server` usage example, "How it was made", the license and the original model card. Sizes are shown as GiB with the decimal GB in parentheses.
 
 **Custom template.** A template is any Markdown file that uses these placeholders; unknown placeholders are left as they are:
 
