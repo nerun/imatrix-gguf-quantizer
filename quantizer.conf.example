@@ -1,0 +1,49 @@
+# quantizer.conf -- Qwen3.8-9B-Distill
+# Sourced as bash by quantizer.sh (arrays use ( ... ) syntax).
+
+# ---- model
+REPO="https://huggingface.co/empero-ai/Qwen3.8-9B-Distill"
+NAME="Qwen3.8-9B-Distill"
+
+# ---- llama.cpp
+LLAMA_BUILD="b12503"
+LLAMA_ASSET="ubuntu-vulkan-x64"
+TOOLS_DIR="$WORK"
+
+# ---- imatrix
+IMATRIX_SRC_TYPE="q8_0"
+IMATRIX_NGL=26                    # RX 6600M, 8 GB: Q8_0 does not fit entirely
+CALIB_URL="https://gist.githubusercontent.com/bartowski1182/eb213dccb3571f863da82e99418f81e8/raw/calibration_datav3.txt"
+
+# ---- quants
+QUANT_TAG="i1"
+QUANTS=(
+    IQ1_S IQ1_M
+    IQ2_XXS IQ2_XS IQ2_S IQ2_M Q2_K_S Q2_K
+    IQ3_XXS IQ3_XS IQ3_S Q3_K_S IQ3_M Q3_K_M Q3_K_L
+    IQ4_XS Q4_K_S IQ4_NL Q4_0 Q4_1 Q4_K_M
+    Q5_K_S Q5_K_M
+    Q6_K
+)
+
+# ---- vision projector
+MMPROJ_TYPES=(f16 q8_0)
+
+# ---- MTP head: download the ready-made one
+MTP_MODE="download"
+MTP_HEAD_REPO="srmiles/Qwen3.8-9B-Distill-MTP-GGUF"
+MTP_HEAD_FILES=(
+    mtp-Qwen3.8-9B-Distill-head-BF16.gguf
+    mtp-Qwen3.8-9B-Distill-head-Q8_0.gguf
+)
+MTP_BASE_REPO="Qwen/Qwen3.5-9B"   # only used by MTP_MODE=build
+MTP_DONOR_TYPE="q8_0"
+MAIN_NO_MTP="yes"
+
+# ---- model card (generated into gguf/README.md by the "card" stage)
+CARD="yes"
+CARD_LICENSE=""                   # empty = taken from the original model card (apache-2.0)
+CARD_TAGS=(qwen3.5 vision)
+CARD_INCLUDE_ORIGINAL="yes"
+CARD_SCRIPT_URL="https://github.com/nerun/imatrix-gguf-quantizer"
+CARD_TEMPLATE=""

@@ -1,0 +1,15 @@
+# Working data created by quantizer.sh
+gguf/
+hf/
+llama-bin/
+llama.cpp/
+venv/
+mtp_tools.py
+.llama_tag
+.llama_bin
+calibration.txt
+calibration_datav3.txt
+.part-*
+
+# Your own configuration (the example is tracked)
+quantizer.conf
