@@ -584,7 +584,9 @@ def card(argv):
                "\nThe quants listed under Files do not contain the MTP block; "
                "these files hold the MTP head separately.\n")) if mtp else "",
         "USAGE": ("\n## Usage\n\n```sh\n# Replace <QUANT> with the quant of the file you downloaded\n"
-                  + cmd + "\n```\n"),
+                  + cmd + "\n```\n"
+                  + f"\nThese files were made with llama.cpp {a.llama_build}. Use that build or a newer one: "
+                  "older builds may fail to load them (for example with a missing tensor error).\n"),
         "HOW_MADE": how,
         "LICENSE_SECTION": (
             f"\n## License\n\nThese files are derived from [{a.repo}](https://huggingface.co/{a.repo}) "

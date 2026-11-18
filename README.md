@@ -189,7 +189,7 @@ The generated card has these parts: front matter (`library_name: gguf`, `license
 | `{{NAME}}`, `{{REPO}}`, `{{LLAMA_BUILD}}` | Values from the config. |
 | `{{FILE_TABLE}}` | Table of quants, BF16 and imatrix. |
 | `{{MMPROJ_SECTION}}`, `{{MTP_SECTION}}` | The mmproj and MTP head sections, empty when there are no such files. |
-| `{{USAGE}}`, `{{HOW_MADE}}`, `{{LICENSE_SECTION}}` | The corresponding sections. |
+| `{{USAGE}}`, `{{HOW_MADE}}`, `{{LICENSE_SECTION}}` | The corresponding sections. `{{USAGE}}` ends with a note that the files need llama.cpp `LLAMA_BUILD` or newer. |
 | `{{ORIGINAL_CARD}}` | The original model card section. |
 | `{{MARKER}}` | The marker line described below. |
 
