@@ -7,6 +7,8 @@ NAME="Qwen3.8-9B-Distill"
 
 # ---- llama.cpp
 LLAMA_BUILD="b12503"
+# Oldest build that can load the output (card note only). Empty means LLAMA_BUILD.
+MIN_LLAMA_BUILD="b12343"
 LLAMA_ASSET="ubuntu-vulkan-x64"
 TOOLS_DIR="$WORK"
 

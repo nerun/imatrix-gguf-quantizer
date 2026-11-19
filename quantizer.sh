@@ -32,6 +32,9 @@ NAME="model-name"
 
 # ---- llama.cpp (prebuilt release, never upgraded automatically)
 LLAMA_BUILD="b12503"
+# Oldest llama.cpp build that can load the output. Used only in the model card note;
+# nothing is downloaded or run with it. Empty means the same as LLAMA_BUILD.
+MIN_LLAMA_BUILD=""
 LLAMA_ASSET="ubuntu-vulkan-x64"   # e.g. ubuntu-x64 for CPU only
 # Where llama.cpp, the converter and the Python venv live. Point several model
 # folders at the same directory to share one installation.
@@ -105,6 +108,7 @@ done
 REPO=""
 NAME=""
 LLAMA_BUILD="b12503"
+MIN_LLAMA_BUILD=""
 LLAMA_ASSET="ubuntu-vulkan-x64"
 TOOLS_DIR="$WORK"
 THREADS="${THREADS:-$(nproc)}"
@@ -149,6 +153,9 @@ REPO="$(hf_repo "$REPO")"
 is_repo "$REPO" || die "REPO must be owner/name or a huggingface.co URL (got '$REPO')"
 [ -n "$NAME" ] || die "NAME is not set in $CONF"
 [[ $LLAMA_BUILD =~ ^b[0-9]+$ ]] || die "LLAMA_BUILD must look like b12503 (got '$LLAMA_BUILD')"
+MIN_LLAMA_BUILD="${MIN_LLAMA_BUILD:-$LLAMA_BUILD}"
+[[ $MIN_LLAMA_BUILD =~ ^b[0-9]+$ ]] || die "MIN_LLAMA_BUILD must look like b12343 (got '$MIN_LLAMA_BUILD')"
+[ "${MIN_LLAMA_BUILD#b}" -le "${LLAMA_BUILD#b}" ] || die "MIN_LLAMA_BUILD ($MIN_LLAMA_BUILD) cannot be newer than LLAMA_BUILD ($LLAMA_BUILD)"
 [ ${#QUANTS[@]} -gt 0 ] || die "QUANTS is empty"
 case "$MTP_MODE" in
   none) ;;
@@ -228,6 +235,7 @@ config        $CONF
 REPO          $REPO
 NAME          $NAME
 llama.cpp     $LLAMA_BUILD ($LLAMA_ASSET) in $TOOLS_DIR
+min build     $MIN_LLAMA_BUILD (model card note only)
 imatrix       from $IMATRIX_SRC_TYPE, ngl=$IMATRIX_NGL
 quants        $NAME.$QUANT_TAG-{${QUANTS[*]}}.gguf
 mmproj        ${MMPROJ_TYPES[*]:-(none)}
@@ -399,7 +407,7 @@ stage_card() {
   [ -x "$PY" ] || die "venv missing; run the setup stage first"
   log "Generating model card"
   local args=() q t f
-  args+=(--out "$OUT/README.md" --name "$NAME" --repo "$REPO" --llama-build "$LLAMA_BUILD")
+  args+=(--out "$OUT/README.md" --name "$NAME" --repo "$REPO" --llama-build "$LLAMA_BUILD" --min-llama-build "$MIN_LLAMA_BUILD")
   args+=(--imatrix-type "$IMATRIX_SRC_TYPE" --calib-url "$CALIB_URL" --quant-tag "$QUANT_TAG")
   args+=(--main-has-mtp "$([ "$MAIN_NO_MTP" = yes ] && echo no || echo yes)")
   if [ -n "$CARD_TEMPLATE" ]; then args+=(--template "$CARD_TEMPLATE"); fi
@@ -494,7 +502,7 @@ def card(argv):
     ap = argparse.ArgumentParser(prog="card")
     for opt in ("out", "name", "repo"):
         ap.add_argument(f"--{opt}", required=True)
-    for opt in ("llama-build", "calib-url", "template", "license", "script-url",
+    for opt in ("llama-build", "min-llama-build", "calib-url", "template", "license", "script-url",
                 "original", "quant-tag"):
         ap.add_argument(f"--{opt}", default="")
     ap.add_argument("--imatrix-type", default="q8_0")
@@ -573,6 +581,7 @@ def card(argv):
         "NAME": a.name,
         "REPO": a.repo,
         "LLAMA_BUILD": a.llama_build,
+        "MIN_LLAMA_BUILD": a.min_llama_build or a.llama_build,
         "FILE_TABLE": table(llm + extra, "Quant") or "_No files found yet._\n",
         "MMPROJ_SECTION": (
             "\n## Vision projector (mmproj)\n\n"
@@ -585,7 +594,7 @@ def card(argv):
                "these files hold the MTP head separately.\n")) if mtp else "",
         "USAGE": ("\n## Usage\n\n```sh\n# Replace <QUANT> with the quant of the file you downloaded\n"
                   + cmd + "\n```\n"
-                  + f"\nThese files were made with llama.cpp {a.llama_build}. Use that build or a newer one: "
+                  + f"\nThese files need llama.cpp {a.min_llama_build or a.llama_build} or newer: "
                   "older builds may fail to load them (for example with a missing tensor error).\n"),
         "HOW_MADE": how,
         "LICENSE_SECTION": (

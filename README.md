@@ -127,6 +127,7 @@ Two environment variables are also read:
 | Variable | Default | Description |
 |---|---|---|
 | `LLAMA_BUILD` | `b12503` | Release tag to download. Must look like `bNNNNN`. |
+| `MIN_LLAMA_BUILD` | *(empty)* | Oldest llama.cpp build that can load the output. Used only in the model card note ("These files need llama.cpp ... or newer"); nothing is downloaded or run with it. Empty means the same as `LLAMA_BUILD`. Must look like `bNNNNN` and cannot be newer than `LLAMA_BUILD`. |
 | `LLAMA_ASSET` | `ubuntu-vulkan-x64` | Release package variant, as it appears in the asset name `llama-<build>-bin-<asset>.tar.gz` (for example `ubuntu-x64`). |
 | `TOOLS_DIR` | `$WORK` | Where `llama-bin/`, `llama.cpp/`, `venv/` and the helper script live. Point several model folders at one directory to share them. |
 
@@ -186,10 +187,10 @@ The generated card has these parts: front matter (`library_name: gguf`, `license
 | Placeholder | Content |
 |---|---|
 | `{{FRONT_MATTER}}` | The YAML front matter, including the `---` lines. |
-| `{{NAME}}`, `{{REPO}}`, `{{LLAMA_BUILD}}` | Values from the config. |
+| `{{NAME}}`, `{{REPO}}`, `{{LLAMA_BUILD}}`, `{{MIN_LLAMA_BUILD}}` | Values from the config. |
 | `{{FILE_TABLE}}` | Table of quants, BF16 and imatrix. |
 | `{{MMPROJ_SECTION}}`, `{{MTP_SECTION}}` | The mmproj and MTP head sections, empty when there are no such files. |
-| `{{USAGE}}`, `{{HOW_MADE}}`, `{{LICENSE_SECTION}}` | The corresponding sections. `{{USAGE}}` ends with a note that the files need llama.cpp `LLAMA_BUILD` or newer. |
+| `{{USAGE}}`, `{{HOW_MADE}}`, `{{LICENSE_SECTION}}` | The corresponding sections. `{{USAGE}}` ends with a note that the files need llama.cpp `MIN_LLAMA_BUILD` (or `LLAMA_BUILD` when empty) or newer. |
 | `{{ORIGINAL_CARD}}` | The original model card section. |
 | `{{MARKER}}` | The marker line described below. |
 
